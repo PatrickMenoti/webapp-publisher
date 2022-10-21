@@ -46,7 +46,7 @@ func downloadBin() error {
 	defer out.Close()
 
 	// Get the data
-	resp, err := http.Get("https://downloads.azion.com/darwin/x86_64/azioncli")
+	resp, err := http.Get("https://downloads.azion.com/linux/x86_64/azioncli")
 	if err != nil {
 		return err
 	}
