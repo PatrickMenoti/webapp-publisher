@@ -1,4 +1,4 @@
-name: "webapp-publisher"
+name: "webapppublisher"
 description: "Publish your Webb Applications to the Azion Platform"
 
 runs:
