@@ -71,7 +71,6 @@ func initProject() error {
 	}
 
 	cmdString := fmt.Sprintf(BINPATH, pathWorkingDir)
-	//initiate azion templates using project name from package.json and project type from env_vars
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
 
 	fmt.Println("Running command: ")
