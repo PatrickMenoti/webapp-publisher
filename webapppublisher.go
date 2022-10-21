@@ -17,13 +17,6 @@ const (
 	WEBDEVENDPATH = "%s/azion/webdev.env"
 )
 
-type WebDev struct {
-	AccessKeyBefore string
-	AccessKeyAfter  string
-	SecretBefore    string
-	SecretAfter     string
-}
-
 func main() {
 
 	err := downloadBin()
