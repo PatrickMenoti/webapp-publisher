@@ -1,8 +1,8 @@
-name: webapp-publisher
-description: Publish your Webb Applications to the Azion Platform
+name: "webapp-publisher"
+description: "Publish your Webb Applications to the Azion Platform"
 
 runs:
-  using: composite
+  using: "composite"
   steps:
     - run: go run webapppublisher.go
       shell: bash
