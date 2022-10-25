@@ -119,13 +119,20 @@ func initProject(configs *ProjectSettings) error {
 	cmdString := fmt.Sprintf(BINPATH, *configs.WorkingDir)
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
 
-	fmt.Println("Running command: ")
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+
+	fmt.Println("running command: ")
 	fmt.Println(cmd)
 
 	err := cmd.Run()
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		return err
 	}
+	fmt.Println("Result: " + out.String())
 
 	switch projectType {
 
