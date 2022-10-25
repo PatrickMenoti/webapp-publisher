@@ -5,8 +5,6 @@ runs:
   using: "composite"
   steps:
     - run: |
-        curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
-        sudo apt install nodejs -y 
         cd ${{ github.action_path }}
         go get github.com/go-git/go-git/v5
         go mod tidy
