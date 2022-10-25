@@ -119,8 +119,16 @@ func initProject(configs *ProjectSettings) error {
 	projectName := os.Getenv("PROJECT_NAME")
 	projectType := os.Getenv("PROJECT_TYPE")
 
-	cmdString := fmt.Sprintf(BINPATH, *&configs.Workspace)
+	// cmdString := fmt.Sprintf(BINPATH, *&configs.Workspace)
 	ls := exec.Command("ls", configs.Workspace)
+	// cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
+
+	pathWorkingDir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	cmdString := fmt.Sprintf(BINPATH, pathWorkingDir)
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
 
 	var out bytes.Buffer
@@ -130,7 +138,7 @@ func initProject(configs *ProjectSettings) error {
 	ls.Stdout = &out
 	ls.Stderr = &stderr
 
-	err := ls.Run()
+	err = ls.Run()
 	if err != nil {
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		return err
