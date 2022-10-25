@@ -19,6 +19,7 @@ import (
 
 type ProjectSettings struct {
 	WorkingDir *string
+	Workspace  string
 }
 
 const (
@@ -42,7 +43,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	workspace := os.Getenv("WORKSPACE")
+
 	configs.WorkingDir = &wDir
+	configs.Workspace = workspace
 
 	err = downloadBin(configs)
 	if err != nil {
@@ -329,7 +334,7 @@ func shouldCommit() (bool, error) {
 
 func commitChanges(configs *ProjectSettings) error {
 
-	r, err := git.PlainOpen(*configs.WorkingDir)
+	r, err := git.PlainOpen(*&configs.Workspace)
 	if err != nil {
 		return err
 	}
