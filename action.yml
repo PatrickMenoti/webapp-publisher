@@ -5,6 +5,9 @@ runs:
   using: "composite"
   steps:
     - run: |
-        go build -o ${{ github.action_path }}/webapppublisher ${{ github.action_path }}/webapppublisher.go
-        ${{ github.action_path }}/webapppublisher
+        cd ${{ github.action_path }}
+        go get github.com/go-git/go-git/v5
+        go mod tidy
+        go mod download
+        go run ${{ github.action_path }}/webapppublisher.go
       shell: bash
