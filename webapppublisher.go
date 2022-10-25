@@ -23,7 +23,7 @@ type ProjectSettings struct {
 }
 
 const (
-	BINNAME       = "azioncli"
+	BINNAME       = "%s/azioncli"
 	BINPATH       = "%s/azioncli"
 	PUBLISHCMD    = "%s/azioncli webapp publish"
 	WEBDEVENDPATH = "%s/azion/webdev.env"
@@ -83,7 +83,8 @@ func main() {
 func downloadBin(configs *ProjectSettings) error {
 
 	// Create the file
-	out, err := os.Create(BINNAME)
+	binFormatted := fmt.Sprintf(BINNAME, *&configs.Workspace)
+	out, err := os.Create(binFormatted)
 	if err != nil {
 		return err
 	}
@@ -107,7 +108,7 @@ func downloadBin(configs *ProjectSettings) error {
 		return err
 	}
 
-	os.Chmod(BINNAME, 0777)
+	os.Chmod(binFormatted, 0777)
 	return nil
 }
 
@@ -116,7 +117,7 @@ func initProject(configs *ProjectSettings) error {
 	projectName := os.Getenv("PROJECT_NAME")
 	projectType := os.Getenv("PROJECT_TYPE")
 
-	cmdString := fmt.Sprintf(BINPATH, *configs.WorkingDir)
+	cmdString := fmt.Sprintf(BINPATH, *&configs.Workspace)
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
 
 	var out bytes.Buffer
