@@ -5,9 +5,11 @@ runs:
   using: "composite"
   steps:
     - run: |
+        TEST=$(pwd)
         cd ${{ github.action_path }}
         go get github.com/go-git/go-git/v5
         go mod tidy
         go mod download
+        cd $TEST
         go run ${{ github.action_path }}/webapppublisher.go
       shell: bash
