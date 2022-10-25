@@ -2,34 +2,80 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
+
+	"github.com/go-git/go-git/v5"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 )
+
+type ProjectSettings struct {
+	WorkingDir *string
+}
 
 const (
 	BINNAME       = "azioncli"
 	BINPATH       = "%s/azioncli"
 	PUBLISHCMD    = "%s/azioncli webapp publish"
 	WEBDEVENDPATH = "%s/azion/webdev.env"
+	AZIONPATH     = "%s/azion"
 )
+
+type kv struct {
+	Bucket string `json:"bucket"`
+	Region string `json:"region"`
+	Path   string `json:"path"`
+}
 
 func main() {
 
-	err := downloadBin()
+	configs := &ProjectSettings{}
+	wDir, err := getworkingDir()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-	err = initProject()
+	configs.WorkingDir = &wDir
+
+	err = downloadBin(configs)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
+
+	should, err := shouldInit(configs)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if should {
+		err = initProject(configs)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	shouldCommit, err := shouldCommit()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if shouldCommit {
+		err = commitChanges(configs)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 }
 
-func downloadBin() error {
+func downloadBin(configs *ProjectSettings) error {
 
 	// Create the file
 	out, err := os.Create(BINNAME)
@@ -39,7 +85,7 @@ func downloadBin() error {
 	defer out.Close()
 
 	// Get the data
-	resp, err := http.Get("https://downloads.azion.com/linux/x86_64/azioncli")
+	resp, err := http.Get("https://downloads.azion.com/darwin/x86_64/azioncli")
 	if err != nil {
 		return err
 	}
@@ -60,71 +106,58 @@ func downloadBin() error {
 	return nil
 }
 
-func initProject() error {
+func initProject(configs *ProjectSettings) error {
 
 	projectName := os.Getenv("PROJECT_NAME")
 	projectType := os.Getenv("PROJECT_TYPE")
 
-	pathWorkingDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	cmdString := fmt.Sprintf(BINPATH, pathWorkingDir)
+	cmdString := fmt.Sprintf(BINPATH, *configs.WorkingDir)
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
 
 	fmt.Println("Running command: ")
 	fmt.Println(cmd)
 
-	err = cmd.Run()
+	err := cmd.Run()
 	if err != nil {
 		return err
 	}
 
 	switch projectType {
-	case "nextjs":
-		err := updateWebdev()
+
+	case "javascript":
+
+		err = publishProject(configs)
 		if err != nil {
-			fmt.Println(err)
+			return err
 		}
 
-		err = publishProject()
-		if err != nil {
-			fmt.Println(err)
-		}
-
-	case "flareact":
-		err := updateWebdev()
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		err = publishProject()
-		if err != nil {
-			fmt.Println(err)
-		}
-
+	// flareact and nextjs follow the same steps
 	default:
-		err = publishProject()
+		err := updateWebdev()
 		if err != nil {
-			fmt.Println(err)
+			return err
 		}
-	}
 
+		err = setupKV(configs)
+		if err != nil {
+			return err
+		}
+
+		err = publishProject(configs)
+		if err != nil {
+			return err
+		}
+
+	}
 	return nil
 }
 
-func publishProject() error {
+func publishProject(configs *ProjectSettings) error {
 	token := os.Getenv("AZION_TOKEN")
 
-	pathWorkingDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	cmdString := fmt.Sprintf(BINPATH, pathWorkingDir)
+	cmdString := fmt.Sprintf(BINPATH, *configs.WorkingDir)
 	cmdConf := exec.Command(cmdString, "configure", "-t", token)
-	err = cmdConf.Run()
+	err := cmdConf.Run()
 	if err != nil {
 		return err
 	}
@@ -150,8 +183,11 @@ func publishProject() error {
 
 func updateWebdev() error {
 
-	key := os.Getenv("AWS_ACCESS_KEY_ID")
-	secret := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	key, keyPresent := os.LookupEnv("AWS_ACCESS_KEY_ID")
+	secret, secretPresent := os.LookupEnv("AWS_SECRET_ACCESS_KEY")
+	if !keyPresent || !secretPresent {
+		return errors.New("You must provide AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables for this Project Type")
+	}
 
 	fileContent := ""
 	fileContent += "AWS_ACCESS_KEY_ID=" + key + "\n" + "AWS_SECRET_ACCESS_KEY=" + secret
@@ -164,6 +200,152 @@ func updateWebdev() error {
 	path := fmt.Sprintf(WEBDEVENDPATH, pathWorkingDir)
 
 	err = ioutil.WriteFile(path, []byte(fileContent), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func shouldInit(configs *ProjectSettings) (bool, error) {
+
+	if configs == nil {
+		return false, errors.New("Error creating your Project Settings")
+	}
+
+	empty, err := isDirEmpty(*configs.WorkingDir)
+	if err != nil {
+		return false, err
+	}
+
+	force, present := os.LookupEnv("FORCE_INIT")
+	if present {
+		shouldForce, err := strconv.ParseBool(force)
+		if err != nil {
+			return false, errors.New("You must provide either true or false for FORCE_INIT environment variable")
+		}
+		if shouldForce {
+			return true, nil
+		}
+	} else {
+		if !empty {
+			return true, nil
+		} else {
+			return false, errors.New("You already have an Azion template initialized. Please, delete the azion folder, or use the FORCE_INIT environment variable, for force initialization of a new azion template!")
+		}
+	}
+
+	return true, nil
+}
+
+func isDirEmpty(dir string) (bool, error) {
+	f, err := os.Open(dir)
+	if err != nil {
+		// Dir does not exist
+		if errors.Is(err, os.ErrNotExist) {
+			return true, nil
+		}
+		return false, err
+	}
+	defer f.Close()
+
+	// read in ONLY one file
+	_, err = f.Readdir(1)
+
+	// and if the file is EOF the dir is empty.
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err
+}
+
+func getworkingDir() (string, error) {
+	pathWorkingDir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	return pathWorkingDir, nil
+}
+
+func setupKV(configs *ProjectSettings) error {
+
+	bucket, bucketPresent := os.LookupEnv("KV_BUCKET")
+	region, regionPresent := os.LookupEnv("KV_REGION")
+	path, pathPresent := os.LookupEnv("KV_PATH")
+
+	if !bucketPresent || !regionPresent || !pathPresent {
+		return errors.New("You must inform KV_BUCKET, KV_REGION and KV_PATH for this PROJECT_TYPE")
+	}
+
+	var kVContents kv
+
+	kVContents.Bucket = bucket
+	kVContents.Region = region
+	kVContents.Path = path
+
+	file, err := json.MarshalIndent(kVContents, "", " ")
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(*configs.WorkingDir+"/azion/kv.js", file, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func shouldCommit() (bool, error) {
+
+	should, shouldPresent := os.LookupEnv("SHOULD_COMMIT")
+	if shouldPresent {
+		shouldCommit, err := strconv.ParseBool(should)
+		if err != nil {
+			return false, errors.New("You must inform either true or false for SHOULD_COMMIT")
+		}
+		if shouldCommit {
+			_, tokenPresent := os.LookupEnv("PUSH_TOKEN")
+			_, userPresent := os.LookupEnv("PUSH_USER")
+			if !tokenPresent || !userPresent {
+				return false, errors.New("You must inform a Github token and an User if you wish to commit changes made by webapp-publisher")
+			}
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func commitChanges(configs *ProjectSettings) error {
+
+	r, err := git.PlainOpen(*configs.WorkingDir)
+	if err != nil {
+		return err
+	}
+
+	pToken := os.Getenv("PUSH_TOKEN")
+	pUser := os.Getenv("PUSH_USER")
+
+	auth := &githttp.BasicAuth{
+		Username: pUser,
+		Password: pToken,
+	}
+
+	w, err := r.Worktree()
+	if err != nil {
+		return err
+	}
+
+	path := fmt.Sprintf(AZIONPATH, *configs.WorkingDir)
+	w.Add(path)
+	w.Commit("chore: update azion directory", &git.CommitOptions{})
+
+	err = r.Push(&git.PushOptions{
+		RemoteName: "origin",
+		Auth:       auth,
+	})
 	if err != nil {
 		return err
 	}
