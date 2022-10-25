@@ -9,5 +9,6 @@ runs:
         go get github.com/go-git/go-git/v5
         go mod tidy
         go mod download
+        cd ${{ GITHUB_WORKSPACE }}
         go run ${{ github.action_path }}/webapppublisher.go
       shell: bash
