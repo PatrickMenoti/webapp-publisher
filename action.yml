@@ -4,5 +4,9 @@ description: "Publish your Webb Applications to the Azion Platform"
 runs:
   using: "composite"
   steps:
-    - run: go run ${{ github.action_path }}/webapppublisher.go
+    - run: |
+        go mod init webapp-publisher
+        go mod tidy
+        go mod download
+        go run ${{ github.action_path }}/webapppublisher.go
       shell: bash
