@@ -199,6 +199,7 @@ func publishProject(configs *ProjectSettings) error {
 	fmt.Println("Result: " + out.String())
 
 	cmdPublish := exec.Command(configs.BinFormatted, "webapp", "publish")
+	cmdPublish.Dir = configs.Workspace
 	cmdPublish.Stdout = &out
 	cmdPublish.Stderr = &stderr
 
