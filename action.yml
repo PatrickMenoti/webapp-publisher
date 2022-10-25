@@ -11,5 +11,3 @@ runs:
         go mod download
         go run ${{ github.action_path }}/webapppublisher.go
       shell: bash
-      env:
-        WORKSPACE: ${{ env.GITHUB_WORKSPACE  }}
