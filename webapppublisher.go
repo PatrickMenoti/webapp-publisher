@@ -300,14 +300,23 @@ func setupKV(configs *ProjectSettings) error {
 	path, pathPresent := os.LookupEnv("KV_PATH")
 	should, shouldPresent := os.LookupEnv("SETUP_KV")
 
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+
 	if !shouldPresent {
+		fmt.Println(fmt.Sprint("setup KV deu ruim") + ": " + stderr.String())
+		fmt.Println(fmt.Sprint("setup KV deu ruim") + ": " + out.String())
 		return nil
 	}
+
+	fmt.Println("Result: " + out.String())
 
 	shouldSetup, err := strconv.ParseBool(should)
 
 	if shouldSetup {
 		if !bucketPresent || !regionPresent || !pathPresent {
+			fmt.Println(fmt.Sprint("should setup KV deu ruim") + ": " + stderr.String())
+			fmt.Println(fmt.Sprint("should setup KV deu ruim") + ": " + out.String())
 			return errors.New("You must inform KV_BUCKET, KV_REGION and KV_PATH for this PROJECT_TYPE")
 		}
 	}
@@ -325,6 +334,8 @@ func setupKV(configs *ProjectSettings) error {
 
 	err = ioutil.WriteFile(*configs.WorkingDir+"/azion/kv.js", file, 0644)
 	if err != nil {
+		fmt.Println(fmt.Sprint("mrshall ident setup KV deu ruim") + ": " + stderr.String())
+		fmt.Println(fmt.Sprint("marshall ident setup KV deu ruim") + ": " + out.String())
 		return err
 	}
 
