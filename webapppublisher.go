@@ -37,6 +37,8 @@ type kv struct {
 
 func main() {
 
+	var stderr bytes.Buffer
+
 	configs := &ProjectSettings{}
 	wDir, err := getworkingDir()
 	if err != nil {
@@ -50,29 +52,34 @@ func main() {
 
 	err = downloadBin(configs)
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		log.Fatal(err)
 	}
 
 	should, err := shouldInit(configs)
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		log.Fatal(err)
 	}
 
 	if should {
 		err = initProject(configs)
 		if err != nil {
+			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 			log.Fatal(err)
 		}
 	}
 
 	shouldCommit, err := shouldCommit()
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		log.Fatal(err)
 	}
 
 	if shouldCommit {
 		err = commitChanges(configs)
 		if err != nil {
+			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 			log.Fatal(err)
 		}
 	}
