@@ -209,6 +209,7 @@ func publishProject(configs *ProjectSettings) error {
 	err = cmdPublish.Run()
 	if err != nil {
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		fmt.Println("Result: " + out.String())
 		return err
 	}
 	fmt.Println("Result: " + out.String())
