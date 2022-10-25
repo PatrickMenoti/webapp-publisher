@@ -18,8 +18,9 @@ import (
 )
 
 type ProjectSettings struct {
-	WorkingDir *string
-	Workspace  string
+	WorkingDir   *string
+	Workspace    string
+	BinFormatted string
 }
 
 const (
@@ -84,7 +85,8 @@ func downloadBin(configs *ProjectSettings) error {
 
 	// Create the file
 	binFormatted := fmt.Sprintf(BINNAME, *&configs.Workspace)
-	out, err := os.Create(binFormatted)
+	configs.BinFormatted = binFormatted
+	out, err := os.Create(configs.BinFormatted)
 	if err != nil {
 		return err
 	}
@@ -108,7 +110,7 @@ func downloadBin(configs *ProjectSettings) error {
 		return err
 	}
 
-	os.Chmod(binFormatted, 0777)
+	os.Chmod(configs.BinFormatted, 0777)
 	return nil
 }
 
@@ -168,14 +170,13 @@ func initProject(configs *ProjectSettings) error {
 func publishProject(configs *ProjectSettings) error {
 	token := os.Getenv("AZION_TOKEN")
 
-	cmdString := fmt.Sprintf(BINPATH, *configs.WorkingDir)
-	cmdConf := exec.Command(cmdString, "configure", "-t", token)
+	cmdConf := exec.Command(configs.BinFormatted, "configure", "-t", token)
 	err := cmdConf.Run()
 	if err != nil {
 		return err
 	}
 
-	cmdPublish := exec.Command(cmdString, "webapp", "publish")
+	cmdPublish := exec.Command(configs.BinFormatted, "webapp", "publish")
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmdPublish.Stdout = &out
@@ -368,6 +369,7 @@ func commitChanges(configs *ProjectSettings) error {
 		RemoteName: "origin",
 		Auth:       auth,
 	})
+	//TODO verify which error NoErrAlreadyUpToDate
 	if err != nil {
 		return err
 	}
