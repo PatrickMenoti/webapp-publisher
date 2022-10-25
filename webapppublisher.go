@@ -122,6 +122,7 @@ func initProject(configs *ProjectSettings) error {
 	cmdString := fmt.Sprintf(BINPATH, *&configs.Workspace)
 	ls := exec.Command("ls", configs.Workspace)
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
+	cmd.Dir = configs.Workspace
 
 	var out bytes.Buffer
 	var stderr bytes.Buffer
