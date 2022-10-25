@@ -185,16 +185,20 @@ func initProject(configs *ProjectSettings) error {
 
 func publishProject(configs *ProjectSettings) error {
 	token := os.Getenv("AZION_TOKEN")
-
-	cmdConf := exec.Command(configs.BinFormatted, "configure", "-t", token)
-	err := cmdConf.Run()
-	if err != nil {
-		return err
-	}
-
-	cmdPublish := exec.Command(configs.BinFormatted, "webapp", "publish")
 	var out bytes.Buffer
 	var stderr bytes.Buffer
+
+	cmdConf := exec.Command(configs.BinFormatted, "configure", "-t", token)
+	cmdConf.Stdout = &out
+	cmdConf.Stderr = &stderr
+	err := cmdConf.Run()
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		return err
+	}
+	fmt.Println("Result: " + out.String())
+
+	cmdPublish := exec.Command(configs.BinFormatted, "webapp", "publish")
 	cmdPublish.Stdout = &out
 	cmdPublish.Stderr = &stderr
 
