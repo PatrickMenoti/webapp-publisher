@@ -25,8 +25,6 @@ type ProjectSettings struct {
 
 const (
 	BINNAME       = "%s/azioncli"
-	BINPATH       = "%s/azioncli"
-	PUBLISHCMD    = "%s/azioncli webapp publish"
 	WEBDEVENDPATH = "%s/azion/webdev.env"
 	AZIONPATH     = "%s/azion"
 )
@@ -119,7 +117,7 @@ func initProject(configs *ProjectSettings) error {
 	projectName := os.Getenv("PROJECT_NAME")
 	projectType := os.Getenv("PROJECT_TYPE")
 
-	cmdString := fmt.Sprintf(BINPATH, *&configs.Workspace)
+	cmdString := fmt.Sprintf(BINNAME, *&configs.Workspace)
 	ls := exec.Command("ls", configs.Workspace)
 	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
 	cmd.Dir = configs.Workspace
@@ -159,7 +157,7 @@ func initProject(configs *ProjectSettings) error {
 
 	// flareact and nextjs follow the same steps
 	default:
-		err := updateWebdev()
+		err := updateWebdev(configs)
 		if err != nil {
 			return err
 		}
@@ -206,7 +204,7 @@ func publishProject(configs *ProjectSettings) error {
 	return nil
 }
 
-func updateWebdev() error {
+func updateWebdev(configs *ProjectSettings) error {
 
 	key, keyPresent := os.LookupEnv("AWS_ACCESS_KEY_ID")
 	secret, secretPresent := os.LookupEnv("AWS_SECRET_ACCESS_KEY")
@@ -217,14 +215,9 @@ func updateWebdev() error {
 	fileContent := ""
 	fileContent += "AWS_ACCESS_KEY_ID=" + key + "\n" + "AWS_SECRET_ACCESS_KEY=" + secret
 
-	pathWorkingDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
+	path := fmt.Sprintf(WEBDEVENDPATH, configs.Workspace)
 
-	path := fmt.Sprintf(WEBDEVENDPATH, pathWorkingDir)
-
-	err = ioutil.WriteFile(path, []byte(fileContent), 0644)
+	err := ioutil.WriteFile(path, []byte(fileContent), 0644)
 	if err != nil {
 		return err
 	}
