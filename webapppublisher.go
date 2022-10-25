@@ -84,9 +84,37 @@ func main() {
 func downloadBin(configs *ProjectSettings) error {
 
 	// Create the file
-	binFormatted := fmt.Sprintf(BINNAME, *&configs.Workspace)
-	configs.BinFormatted = binFormatted
-	out, err := os.Create(configs.BinFormatted)
+	// binFormatted := fmt.Sprintf(BINNAME, *&configs.Workspace)
+	// configs.BinFormatted = binFormatted
+	// out, err := os.Create(configs.BinFormatted)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer out.Close()
+
+	// // Get the data
+	// resp, err := http.Get("https://downloads.azion.com/linux/x86_64/azioncli")
+	// if err != nil {
+	// 	return err
+	// }
+	// defer resp.Body.Close()
+
+	// // Check server response
+	// if resp.StatusCode != http.StatusOK {
+	// 	return fmt.Errorf("bad status: %s", resp.Status)
+	// }
+
+	// // Writer the body to file
+	// _, err = io.Copy(out, resp.Body)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// os.Chmod(configs.BinFormatted, 0777)
+	// return nil
+
+	// Create the file
+	out, err := os.Create(BINNAME)
 	if err != nil {
 		return err
 	}
@@ -110,7 +138,7 @@ func downloadBin(configs *ProjectSettings) error {
 		return err
 	}
 
-	os.Chmod(configs.BinFormatted, 0777)
+	os.Chmod(BINNAME, 0777)
 	return nil
 }
 
