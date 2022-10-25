@@ -85,7 +85,7 @@ func downloadBin(configs *ProjectSettings) error {
 	defer out.Close()
 
 	// Get the data
-	resp, err := http.Get("https://downloads.azion.com/darwin/x86_64/azioncli")
+	resp, err := http.Get("https://downloads.azion.com/linux/x86_64/azioncli")
 	if err != nil {
 		return err
 	}
@@ -273,9 +273,18 @@ func setupKV(configs *ProjectSettings) error {
 	bucket, bucketPresent := os.LookupEnv("KV_BUCKET")
 	region, regionPresent := os.LookupEnv("KV_REGION")
 	path, pathPresent := os.LookupEnv("KV_PATH")
+	should, shouldPresent := os.LookupEnv("SETUP_KV")
 
-	if !bucketPresent || !regionPresent || !pathPresent {
-		return errors.New("You must inform KV_BUCKET, KV_REGION and KV_PATH for this PROJECT_TYPE")
+	if !shouldPresent {
+		return nil
+	}
+
+	shouldSetup, err := strconv.ParseBool(should)
+
+	if shouldSetup {
+		if !bucketPresent || !regionPresent || !pathPresent {
+			return errors.New("You must inform KV_BUCKET, KV_REGION and KV_PATH for this PROJECT_TYPE")
+		}
 	}
 
 	var kVContents kv

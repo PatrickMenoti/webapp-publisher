@@ -9,7 +9,8 @@ Publishes your web applications to the Azion Platform.
 |`AZION_TOKEN`|Token used to create the necessary resources in your azion account|Required|
 |`AWS_ACCESS_KEY_ID`|Your AWS access key id|Optional - used only if project type is nextjs or flareact|
 |`AWS_SECRET_ACCESS_KEY`|Your AWS secret access key|Optional - used only if project type is nextjs or flareact|
-|`KV_BUCKET`|Your AWS Bucket|Optional - used only if project type is nextjs or flareact|
+|`SETUP_KV`|Indicate true if you wish to setup your own AWS bucket|Optional|
+|`KV_BUCKET`|Your AWS Bucket|Optional - used only if SETUP_KV is true|
 |`KV_REGION`|Your AWS Region|Optional - used only if project type is nextjs or flareact|
 |`KV_PATH`|Your AWS path|Optional - used only if project type is nextjs or flareact|
 |`FORCE_INIT`|Indicates if you want to force a new initialization even if you already have an azion template initialized|Optional|
