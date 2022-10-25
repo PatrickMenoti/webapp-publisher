@@ -5,7 +5,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-        go mod init webapp-publisher
+        cd ${{ github.action_path }}
         go get github.com/go-git/go-git/v5
         go mod tidy
         go mod download
