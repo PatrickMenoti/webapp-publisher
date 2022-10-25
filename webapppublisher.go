@@ -44,7 +44,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	workspace := os.Getenv("WORKSPACE")
+	workspace := os.Getenv("GITHUB_WORKSPACE")
 
 	configs.WorkingDir = &wDir
 	configs.Workspace = workspace
