@@ -378,6 +378,8 @@ func commitChanges(configs *ProjectSettings) error {
 
 	r, err := git.PlainOpen(*&configs.Workspace)
 	if err != nil {
+		fmt.Println(fmt.Sprint("ruim ao iniciar") + ": " + stderr.String())
+		fmt.Println(fmt.Sprint("ruim ao iniciar") + ": " + out.String())
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		fmt.Println("Result: " + out.String())
 		return err
@@ -393,6 +395,8 @@ func commitChanges(configs *ProjectSettings) error {
 
 	w, err := r.Worktree()
 	if err != nil {
+		fmt.Println(fmt.Sprint("workingtree") + ": " + stderr.String())
+		fmt.Println(fmt.Sprint("working tree") + ": " + out.String())
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		fmt.Println("Result: " + out.String())
 		return err
@@ -408,6 +412,8 @@ func commitChanges(configs *ProjectSettings) error {
 	})
 	//TODO verify which error NoErrAlreadyUpToDate
 	if err != nil {
+		fmt.Println(fmt.Sprint("ruim no push") + ": " + stderr.String())
+		fmt.Println(fmt.Sprint("ruim no push") + ": " + out.String())
 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 		fmt.Println("Result: " + out.String())
 		return err
