@@ -24,7 +24,7 @@ type ProjectSettings struct {
 }
 
 const (
-	BINNAME       = "%s/azioncli"
+	BINNAME       = "%azioncli"
 	BINPATH       = "%s/azioncli"
 	PUBLISHCMD    = "%s/azioncli webapp publish"
 	WEBDEVENDPATH = "%s/azion/webdev.env"
