@@ -371,8 +371,15 @@ func shouldCommit() (bool, error) {
 
 func commitChanges(configs *ProjectSettings) error {
 
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+
+	fmt.Println("Result: " + out.String())
+
 	r, err := git.PlainOpen(*&configs.Workspace)
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		fmt.Println("Result: " + out.String())
 		return err
 	}
 
@@ -386,6 +393,8 @@ func commitChanges(configs *ProjectSettings) error {
 
 	w, err := r.Worktree()
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		fmt.Println("Result: " + out.String())
 		return err
 	}
 
@@ -399,6 +408,8 @@ func commitChanges(configs *ProjectSettings) error {
 	})
 	//TODO verify which error NoErrAlreadyUpToDate
 	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		fmt.Println("Result: " + out.String())
 		return err
 	}
 
