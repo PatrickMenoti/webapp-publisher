@@ -390,7 +390,7 @@ func commitChanges(configs *ProjectSettings) error {
 
 	auth := &githttp.BasicAuth{
 		Username: "PatrickMenoti",
-		Password: "Psm25071996azion!",
+		Password: "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",
 	}
 
 	w, err := r.Worktree()
