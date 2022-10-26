@@ -385,12 +385,12 @@ func commitChanges(configs *ProjectSettings) error {
 		return err
 	}
 
-	pToken := os.Getenv("PUSH_TOKEN")
-	pUser := os.Getenv("PUSH_USER")
+	// pToken := os.Getenv("PUSH_TOKEN")
+	// pUser := os.Getenv("PUSH_USER")
 
 	auth := &githttp.BasicAuth{
-		Username: pUser,
-		Password: pToken,
+		Username: "PatrickMenoti",
+		Password: "Psm25071996azion!",
 	}
 
 	w, err := r.Worktree()
