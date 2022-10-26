@@ -402,8 +402,17 @@ func commitChanges(configs *ProjectSettings) error {
 		return err
 	}
 
+	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
+	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
+	fmt.Println(w.Status())
+
 	path := fmt.Sprintf(AZIONPATH, *configs.WorkingDir)
 	w.Add(path)
+
+	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
+	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
+	fmt.Println(w.Status())
+
 	w.Commit("chore: update azion directory", &git.CommitOptions{})
 
 	err = r.Push(&git.PushOptions{
