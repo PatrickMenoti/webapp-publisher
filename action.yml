@@ -14,7 +14,10 @@ runs:
         if [ ${{ env.SHOULD_COMMIT }} = true ]
         then
           echo "Pushing Azion dir to your "
-          cd ${{ env.GITHUB_WORKSPACE }}
+          echo $GITHUB_WORKSPACE
+          echo ${{ GITHUB_WORKSPACE }}
+          echo ${{ env.GITHUB_WORKSPACE  }}
+          cd $GITHUB_WORKSPACE
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ${{ env.GITHUB_WORKSPACE }}/azion/
