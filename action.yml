@@ -5,22 +5,16 @@ runs:
   using: "composite"
   steps:
     - run: |
-        # npm install react react-dom
         mydir=$(pwd)
         cd ${{ github.action_path }}
-        go get github.com/go-git/go-git/v5
-        go mod tidy
-        go mod download
         go run ${{ github.action_path }}/webapppublisher.go
         if [ ${{ env.SHOULD_COMMIT }} = true ]
         then
-          echo "Pushing Azion dir to your "
-          echo $mydir
-          ls $mydir/azion
+          echo "Pushing Azion dir to remote"
           cd $mydir
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add $mydir/azion/
+          git add $mydir/azion/*
           git commit -m "chore: update azion directory"
           git push
         else
