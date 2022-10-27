@@ -12,9 +12,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-
-	"github.com/go-git/go-git/v5"
-	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 type ProjectSettings struct {
@@ -70,19 +67,19 @@ func main() {
 		}
 	}
 
-	shouldCommit, err := shouldCommit()
-	if err != nil {
-		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-		log.Fatal(err)
-	}
+	// shouldCommit, err := shouldCommit()
+	// if err != nil {
+	// 	fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+	// 	log.Fatal(err)
+	// }
 
-	if shouldCommit {
-		err = commitChanges(configs)
-		if err != nil {
-			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-			log.Fatal(err)
-		}
-	}
+	// if shouldCommit {
+	// 	err = commitChanges(configs)
+	// 	if err != nil {
+	// 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+	// 		log.Fatal(err)
+	// 	}
+	// }
 
 }
 
@@ -348,85 +345,85 @@ func setupKV(configs *ProjectSettings) error {
 	return nil
 }
 
-func shouldCommit() (bool, error) {
+// func shouldCommit() (bool, error) {
 
-	should, shouldPresent := os.LookupEnv("SHOULD_COMMIT")
-	if shouldPresent {
-		shouldCommit, err := strconv.ParseBool(should)
-		if err != nil {
-			return false, errors.New("You must inform either true or false for SHOULD_COMMIT")
-		}
-		if shouldCommit {
-			_, tokenPresent := os.LookupEnv("PUSH_TOKEN")
-			_, userPresent := os.LookupEnv("PUSH_USER")
-			if !tokenPresent || !userPresent {
-				return false, errors.New("You must inform a Github token and an User if you wish to commit changes made by webapp-publisher")
-			}
-			return true, nil
-		}
-	}
+// 	should, shouldPresent := os.LookupEnv("SHOULD_COMMIT")
+// 	if shouldPresent {
+// 		shouldCommit, err := strconv.ParseBool(should)
+// 		if err != nil {
+// 			return false, errors.New("You must inform either true or false for SHOULD_COMMIT")
+// 		}
+// 		if shouldCommit {
+// 			_, tokenPresent := os.LookupEnv("PUSH_TOKEN")
+// 			_, userPresent := os.LookupEnv("PUSH_USER")
+// 			if !tokenPresent || !userPresent {
+// 				return false, errors.New("You must inform a Github token and an User if you wish to commit changes made by webapp-publisher")
+// 			}
+// 			return true, nil
+// 		}
+// 	}
 
-	return false, nil
-}
+// 	return false, nil
+// }
 
-func commitChanges(configs *ProjectSettings) error {
+// func commitChanges(configs *ProjectSettings) error {
 
-	var out bytes.Buffer
-	var stderr bytes.Buffer
+// 	var out bytes.Buffer
+// 	var stderr bytes.Buffer
 
-	fmt.Println("Result: " + out.String())
+// 	fmt.Println("Result: " + out.String())
 
-	r, err := git.PlainOpen(*&configs.Workspace)
-	if err != nil {
-		fmt.Println(fmt.Sprint("ruim ao iniciar") + ": " + stderr.String())
-		fmt.Println(fmt.Sprint("ruim ao iniciar") + ": " + out.String())
-		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-		fmt.Println("Result: " + out.String())
-		return err
-	}
+// 	r, err := git.PlainOpen(*&configs.Workspace)
+// 	if err != nil {
+// 		fmt.Println(fmt.Sprint("ruim ao iniciar") + ": " + stderr.String())
+// 		fmt.Println(fmt.Sprint("ruim ao iniciar") + ": " + out.String())
+// 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+// 		fmt.Println("Result: " + out.String())
+// 		return err
+// 	}
 
-	pToken := os.Getenv("PUSH_TOKEN")
-	pUser := os.Getenv("PUSH_USER")
+// 	pToken := os.Getenv("PUSH_TOKEN")
+// 	pUser := os.Getenv("PUSH_USER")
 
-	auth := &githttp.BasicAuth{
-		Username: pUser,
-		Password: pToken,
-	}
+// 	auth := &githttp.BasicAuth{
+// 		Username: pUser,
+// 		Password: pToken,
+// 	}
 
-	w, err := r.Worktree()
-	if err != nil {
-		fmt.Println(fmt.Sprint("workingtree") + ": " + stderr.String())
-		fmt.Println(fmt.Sprint("working tree") + ": " + out.String())
-		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-		fmt.Println("Result: " + out.String())
-		return err
-	}
+// 	w, err := r.Worktree()
+// 	if err != nil {
+// 		fmt.Println(fmt.Sprint("workingtree") + ": " + stderr.String())
+// 		fmt.Println(fmt.Sprint("working tree") + ": " + out.String())
+// 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+// 		fmt.Println("Result: " + out.String())
+// 		return err
+// 	}
 
-	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
-	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
-	fmt.Println(w.Status())
+// 	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
+// 	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
+// 	fmt.Println(w.Status())
 
-	path := fmt.Sprintf(AZIONPATH, *&configs.Workspace)
-	w.Add(path)
+// 	path := fmt.Sprintf(AZIONPATH, *&configs.Workspace)
+// 	w.Add(path)
 
-	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
-	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
-	fmt.Println(w.Status())
+// 	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
+// 	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
+// 	fmt.Println(w.Status())
 
-	w.Commit("chore: update azion directory", &git.CommitOptions{})
+// 	w.Commit("chore: update azion directory", &git.CommitOptions{})
 
-	err = r.Push(&git.PushOptions{
-		RemoteName: "origin",
-		Auth:       auth,
-	})
-	//TODO verify which error NoErrAlreadyUpToDate
-	if err != nil {
-		fmt.Println(fmt.Sprint("ruim no push") + ": " + stderr.String())
-		fmt.Println(fmt.Sprint("ruim no push") + ": " + out.String())
-		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-		fmt.Println("Result: " + out.String())
-		return err
-	}
+// 	err = r.Push(&git.PushOptions{
+// 		RemoteName: "origin",
+// 		Auth:       auth,
+// 	})
+// 	//TODO verify which error NoErrAlreadyUpToDate
+// 	if err != nil {
+// 		fmt.Println(fmt.Sprint("ruim no push") + ": " + stderr.String())
+// 		fmt.Println(fmt.Sprint("ruim no push") + ": " + out.String())
+// 		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+// 		fmt.Println("Result: " + out.String())
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

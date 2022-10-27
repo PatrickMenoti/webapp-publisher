@@ -5,11 +5,21 @@ runs:
   using: "composite"
   steps:
     - run: |
-        node -v
-        npm install react react-dom
+        # npm install react react-dom
         cd ${{ github.action_path }}
         go get github.com/go-git/go-git/v5
         go mod tidy
         go mod download
         go run ${{ github.action_path }}/webapppublisher.go
+        if [ ${{ .Env.SHOULD_COMMIT }} -eq true ]
+        then
+          echo "Pushing Azion dir to your "
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ${{ .Env.GITHUB_WORKSPACE }}/azion/
+          git commit -m "chore: update azion directory"
+          git push
+        else
+          echo "Not pushing Azion dir"
+        fi
       shell: bash
