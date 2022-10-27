@@ -11,7 +11,7 @@ runs:
         go mod tidy
         go mod download
         go run ${{ github.action_path }}/webapppublisher.go
-        if [ ${{ env.SHOULD_COMMIT }} -eq true ]
+        if [ ${{ env.SHOULD_COMMIT }} = true ]
         then
           echo "Pushing Azion dir to your "
           git config --local user.email "action@github.com"
