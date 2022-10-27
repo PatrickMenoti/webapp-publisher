@@ -406,7 +406,7 @@ func commitChanges(configs *ProjectSettings) error {
 	fmt.Println(fmt.Sprint(w.Status()) + ": " + out.String())
 	fmt.Println(w.Status())
 
-	path := fmt.Sprintf(AZIONPATH, *configs.WorkingDir)
+	path := fmt.Sprintf(AZIONPATH, *&configs.Workspace)
 	w.Add(path)
 
 	fmt.Println(fmt.Sprint(w.Status()) + ": " + stderr.String())
