@@ -6,6 +6,7 @@ runs:
   steps:
     - run: |
         # npm install react react-dom
+        mydir=$(pwd)
         cd ${{ github.action_path }}
         go get github.com/go-git/go-git/v5
         go mod tidy
@@ -14,12 +15,12 @@ runs:
         if [ ${{ env.SHOULD_COMMIT }} = true ]
         then
           echo "Pushing Azion dir to your "
-          echo ${{ GITHUB_WORKSPACE }}
-          echo ${{ env.GITHUB_WORKSPACE  }}
-          cd ${{ GITHUB_WORKSPACE }}
+          echo $mydir
+          ls $mydir/azion
+          cd $mydir
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ${{ env.GITHUB_WORKSPACE }}/azion/
+          git add $mydir/azion/
           git commit -m "chore: update azion directory"
           git push
         else
