@@ -11,12 +11,12 @@ runs:
         go mod tidy
         go mod download
         go run ${{ github.action_path }}/webapppublisher.go
-        if [ ${{ .Env.SHOULD_COMMIT }} -eq true ]
+        if [ ${{ env.SHOULD_COMMIT }} -eq true ]
         then
           echo "Pushing Azion dir to your "
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ${{ .Env.GITHUB_WORKSPACE }}/azion/
+          git add ${{ env.GITHUB_WORKSPACE }}/azion/
           git commit -m "chore: update azion directory"
           git push
         else
