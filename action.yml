@@ -14,6 +14,7 @@ runs:
           cd $mydir
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git submodule add git://github.com/aziontech/cells-site-template.git $mydir/azion/cells-site-template
           git add $mydir/azion/*
           git commit -m "chore: update azion directory"
           git push
