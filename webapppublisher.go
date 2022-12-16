@@ -252,7 +252,7 @@ func shouldInit(configs *ProjectSettings) (bool, error) {
 		if empty {
 			return true, nil
 		} else {
-			return false, errors.New("You already have an Azion template initialized. Please, delete the azion folder, or use the FORCE_INIT environment variable, for force initialization of a new azion template!")
+			return false, nil
 		}
 	}
 

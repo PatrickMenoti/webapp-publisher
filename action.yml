@@ -1,5 +1,5 @@
 name: "webapp-publisher"
-description: "Publish your Webb Applications to the Azion Platform"
+description: "Publish your Web Applications to the Azion Platform"
 
 runs:
   using: "composite"
@@ -15,7 +15,7 @@ runs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           rm -rf $mydir/azion/cells-site-template/.git
-          # git submodule add git://github.com/aziontech/cells-site-template.git $mydir/azion/cells-site-template
+          rm $mydir/azion/webdev.env
           git add $mydir/azion/*
           git commit -m "chore: update azion directory"
           git push
