@@ -15,7 +15,7 @@ runs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           rm -rf $mydir/azion/cells-site-template/.git
-          rm $mydir/azion/webdev.env
+          rm -f $mydir/azion/webdev.env
           if [ ! -d "/path/to/dir" ] 
           then
             git add $mydir/azion/*
