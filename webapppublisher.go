@@ -68,6 +68,12 @@ func main() {
 		}
 	}
 
+	err = buildAndPublish(configs)
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		log.Fatal(err)
+	}
+
 }
 
 func downloadBin(configs *ProjectSettings) error {
@@ -139,35 +145,6 @@ func initProject(configs *ProjectSettings) error {
 	}
 	fmt.Println("Result: " + out.String())
 
-	switch projectType {
-
-	case "javascript":
-
-		err = publishProject(configs)
-		if err != nil {
-			return err
-		}
-
-	// flareact and nextjs follow the same steps
-	case "nextjs", "flareact":
-		err := updateWebdev(configs)
-		if err != nil {
-			return err
-		}
-
-		err = setupKV(configs)
-		if err != nil {
-			return err
-		}
-
-		err = publishProject(configs)
-		if err != nil {
-			return err
-		}
-	default:
-		return errors.New("This format is not currently supported")
-
-	}
 	return nil
 }
 
@@ -325,6 +302,42 @@ func setupKV(configs *ProjectSettings) error {
 	if err != nil {
 		fmt.Println(fmt.Sprint("failed to configure kv.json") + ": " + stderr.String())
 		return err
+	}
+
+	return nil
+}
+
+func buildAndPublish(configs *ProjectSettings) error {
+	projectType := os.Getenv("PROJECT_TYPE")
+
+	switch projectType {
+
+	case "javascript":
+
+		err := publishProject(configs)
+		if err != nil {
+			return err
+		}
+
+	// flareact and nextjs follow the same steps
+	case "nextjs", "flareact":
+		err := updateWebdev(configs)
+		if err != nil {
+			return err
+		}
+
+		err = setupKV(configs)
+		if err != nil {
+			return err
+		}
+
+		err = publishProject(configs)
+		if err != nil {
+			return err
+		}
+	default:
+		return errors.New("This format is not currently supported")
+
 	}
 
 	return nil
