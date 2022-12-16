@@ -16,10 +16,10 @@ runs:
           git config --local user.name "GitHub Action"
           rm -rf $mydir/azion/cells-site-template/.git
           rm -f $mydir/azion/webdev.env
-          if [ ! -d "/path/to/dir" ] 
+          if [ ! -d "/azion/" ] 
           then
             git add $mydir/azion/*
-            git commit -m "chore: update azion directory"
+            git commit --allow-empty -m "chore: update azion directory"
             git push
           fi
         else
