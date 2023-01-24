@@ -116,7 +116,7 @@ func initProject(configs *ProjectSettings) error {
 
 	cmdString := fmt.Sprintf(BINNAME, *&configs.Workspace)
 	ls := exec.Command("ls", configs.Workspace)
-	cmd := exec.Command(cmdString, "webapp", "init", "--name", projectName, "--type", projectType, "-y")
+	cmd := exec.Command(cmdString, "edge_applications", "init", "--name", projectName, "--type", projectType, "-y")
 	cmd.Dir = configs.Workspace
 
 	//TODO: add option to silence longs
@@ -163,7 +163,7 @@ func publishProject(configs *ProjectSettings) error {
 	}
 	fmt.Println("Result: " + out.String())
 
-	cmdPublish := exec.Command(configs.BinFormatted, "webapp", "publish")
+	cmdPublish := exec.Command(configs.BinFormatted, "edge_applications", "publish")
 	cmdPublish.Dir = configs.Workspace
 	cmdPublish.Stdout = &out
 	cmdPublish.Stderr = &stderr
