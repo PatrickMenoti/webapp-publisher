@@ -14,8 +14,8 @@ runs:
           cd $mydir
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git config advice.addIgnoredFile false
           rm -f $mydir/azion/webdev.env
+          rm -rf $mydir/azion/cells-site-template
           if [ ! -d "/azion/" ] 
           then
             git add $mydir/azion/*
